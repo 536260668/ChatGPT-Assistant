@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <p>连接状态:<span id="status">未连接</span></p>
+    <p>密码:</p>
+    <p><input id="password"></p>
+    <p>模型回复:<span id="message"></span></p>
+    <p><input id="inp"></p>
+    <button id="submit">提交</button>
+
+<script>
+    let status = document.getElementById("status")
+    let message = document.getElementById("message")
+    let inp = document.getElementById("inp")
+    let submit = document.getElementById("submit")
+    let password = document.getElementById("password")
+
+    let socket = new WebSocket("ws://your url/chat")
+    socket.addEventListener("open",(event)=>{
+        status.innerText ="已连接"
+    })
+    socket.addEventListener("error",(event)=>{
+        status.innerText ="错误"
+    })
+    socket.addEventListener("close",(event)=>{
+        status.innerText ="密码错误或连接断开"
+    })
+    socket.addEventListener("message",(event)=>{
+        message.innerText += event.data
+    })
+
+    submit.addEventListener("click",()=>{
+        let messagePayload = {
+            data: inp.value, // 原始的输入框内容，可以作为消息内容字段
+            passwd: password.value, // 添加一个时间戳字段 (示例)
+            // 可以添加更多字段，例如用户 ID, 消息类型等等...
+        };
+
+        // 使用 JSON.stringify() 将 JavaScript 对象转换为 JSON 字符串
+        let jsonString = JSON.stringify(messagePayload);
+
+        // 发送 JSON 字符串
+        socket.send(jsonString);
+        message.innerText = ""
+    })
+</script>
+</body>
+
+
+</html>
